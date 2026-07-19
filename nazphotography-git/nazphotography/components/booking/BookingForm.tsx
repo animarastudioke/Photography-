@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { submitBooking } from "@/lib/submissions";
 import { services, formatKes } from "@/lib/data/services";
+import { payment } from "@/lib/data/contact";
 import type { BookingFormData } from "@/types";
 
 const budgetRanges = ["Under Ksh 15,000", "Ksh 15,000 – 40,000", "Ksh 40,000 – 100,000", "Ksh 100,000+"];
@@ -64,6 +65,22 @@ export default function BookingForm() {
         <p className="max-w-xs text-sm text-ash">
           I&apos;ll review your request and confirm availability within 24 hours.
         </p>
+        <div className="mt-1 w-full max-w-xs rounded-sm border border-gold/20 bg-ink p-4 text-left">
+          <p className="text-[11px] font-medium uppercase tracking-widest text-gold">
+            Once Confirmed — Deposit Payment
+          </p>
+          <p className="mt-2 text-sm text-ash">
+            Pay your 30% deposit via M-Pesa:
+          </p>
+          <p className="mt-1 text-sm text-ivory">
+            Paybill: <span className="font-semibold">{payment.mpesaPaybill}</span>
+            <br />
+            Account: <span className="font-semibold">{payment.mpesaAccount}</span>
+          </p>
+          <p className="mt-2 text-xs text-ash">
+            You&apos;ll also get this by email — please wait for my confirmation before paying.
+          </p>
+        </div>
         <button onClick={() => setStatus("idle")} className="btn-outline mt-2">
           Book Another Session
         </button>

@@ -53,7 +53,11 @@ no runtime calls to Google).
 4. **Firebase** — create a Firebase project, enable Firestore, and fill in the
    `NEXT_PUBLIC_FIREBASE_*` values in `.env.local`. Until then, the booking and contact
    forms will show a friendly error asking people to WhatsApp instead — they won't crash,
-   but they also won't save anywhere.
+   but they also won't save anywhere. Once Firestore is enabled, paste `firestore.rules`
+   into Firebase Console → Firestore Database → Rules (or deploy it with the Firebase CLI:
+   `firebase deploy --only firestore:rules`) — it locks the `bookings`, `messages`, and
+   `newsletter` collections to create-only, shape-validated writes from the public forms,
+   with no public read/update/delete.
 5. **Cloudinary env vars** — only needed once you migrate off local `/public` images.
 6. **WhatsApp number / real contact details** — update `NEXT_PUBLIC_WHATSAPP_NUMBER` and the
    phone/email in `components/layout/Footer.tsx` and `app/contact/page.tsx`.
@@ -84,6 +88,49 @@ Any Next.js host works. Set the env vars from `.env.example` in your host's dash
 note that for a static export, `NEXT_PUBLIC_*` vars are baked in at **build time**, so set
 them before running `npm run build`, not after.
 
+## Booking notifications & deposit payment
+
+`apps-script/booking-notify.gs` is a Google Apps Script Web App (a reference copy —
+Apps Script projects live at script.google.com, not in this repo) that the booking form
+calls directly the moment someone submits. It sends two emails from your own Gmail
+account, via `GmailApp.sendEmail`, no SMTP setup or billing plan needed:
+
+1. **To you** (`STUDIO_NOTIFY_EMAIL`) — the full booking details, so you actually find out
+   when someone books instead of having to check the Firebase Console.
+2. **To the customer** — a confirmation that you'll follow up within 24 hours, plus the
+   M-Pesa deposit instructions (Paybill `247247`, Account `0706549995`, matching what's
+   shown on the booking form's success screen in `components/booking/BookingForm.tsx`).
+
+To set it up:
+
+1. Go to [script.google.com](https://script.google.com), create a new project, and paste
+   in the contents of `apps-script/booking-notify.gs`.
+2. Edit the two constants at the top of the script: set `SHARED_SECRET` to a random
+   string (a password generator works fine) and `STUDIO_NOTIFY_EMAIL` to where booking
+   alerts should go.
+3. **Deploy > New deployment > Web app.** Set "Execute as" to **Me** and "Who has access"
+   to **Anyone**, then deploy. The first deploy prompts you to authorize the script to
+   send email as you — that's expected, it's your own Gmail account.
+4. Copy the deployment's `/exec` URL.
+5. Set two env vars (in `.env.local` for dev, and in Vercel's project settings for the
+   live site — remember `NEXT_PUBLIC_*` vars are baked in at build time, so redeploy
+   after setting them):
+   - `NEXT_PUBLIC_BOOKING_NOTIFY_URL` — the `/exec` URL from step 4
+   - `NEXT_PUBLIC_BOOKING_NOTIFY_SECRET` — the same string you set as `SHARED_SECRET`
+
+This URL and secret both end up in the client-side JS bundle, same as any `NEXT_PUBLIC_*`
+var — the secret deters casual abuse of the public Apps Script endpoint, it isn't real
+access control. If that ever matters more (e.g. spam traffic), move this behind a proper
+server endpoint instead.
+
+Bookings still save to Firestore with or without this configured — you'd just have to
+check the Firestore console manually for new ones if it's unset.
+
+If your Paybill or account number ever change, update the `payment` object in
+`lib/data/contact.ts` (used by the booking form) and the `MPESA_PAYBILL`/`MPESA_ACCOUNT`
+constants at the top of `apps-script/booking-notify.gs` (used by the email), then
+redeploy the Apps Script project (Deploy > Manage deployments > Edit > New version).
+
 ## Roadmap (not built in this pass)
 
 This repo covers **Phase 1 (foundation) and Phase 2 (homepage + all core pages)**.
@@ -92,8 +139,9 @@ Still ahead, in the order I'd tackle them:
 3. **Portfolio/gallery polish** — pagination or infinite scroll once there are 50+ real images
 4. **Services/pricing CMS** — move `lib/data/*.ts` into Firestore or Sanity so you can edit
    copy and prices without redeploying
-5. **Booking system hardening** — email/WhatsApp notifications on new Firestore bookings
-   (Firebase Cloud Function trigger), calendar conflict checking
+5. **Booking system hardening** — email notifications on new bookings are now built (see
+   "Booking notifications & deposit payment" below); still ahead: WhatsApp notifications,
+   calendar conflict checking
 6. **Blog CMS** — same pattern as services; currently static data for 3 posts
 7. **Contact** — spam protection (reCAPTCHA or honeypot) before going public
 8. **Testing & deployment** — Playwright smoke tests, Lighthouse CI, Vercel preview deploys

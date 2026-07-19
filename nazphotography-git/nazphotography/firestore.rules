@@ -1,0 +1,72 @@
+rules_version = '2';
+
+// Locks down the collections written by lib/submissions.ts:
+// - Public visitors may only *create* documents (booking requests, contact
+//   messages, newsletter signups) with the exact shape the site's forms send.
+// - No one (other than the Firebase Admin SDK, which bypasses these rules)
+//   can read, update, or delete — that data is meant to be viewed via the
+//   Firebase Console or a future authenticated admin dashboard, not the
+//   public site.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /bookings/{bookingId} {
+      allow read, update, delete: if false;
+      allow create: if isValidBooking(request.resource.data);
+    }
+
+    match /messages/{messageId} {
+      allow read, update, delete: if false;
+      allow create: if isValidMessage(request.resource.data);
+    }
+
+    match /newsletter/{subscriberId} {
+      allow read, update, delete: if false;
+      allow create: if isValidNewsletterSignup(request.resource.data);
+    }
+
+    function isEmail(value) {
+      return value is string && value.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$');
+    }
+
+    function isValidBooking(data) {
+      return data.keys().hasOnly([
+          'name', 'email', 'phone', 'serviceId', 'preferredDate',
+          'location', 'budgetRange', 'message', 'status', 'createdAt'
+        ])
+        && data.keys().hasAll([
+          'name', 'email', 'phone', 'serviceId', 'preferredDate',
+          'location', 'budgetRange', 'message', 'status', 'createdAt'
+        ])
+        && data.name is string && data.name.size() > 0 && data.name.size() < 200
+        && isEmail(data.email)
+        && data.phone is string && data.phone.size() > 0 && data.phone.size() < 40
+        && data.serviceId is string && data.serviceId.size() < 100
+        && data.preferredDate is string && data.preferredDate.size() < 40
+        && data.location is string && data.location.size() < 200
+        && data.budgetRange is string && data.budgetRange.size() < 100
+        && data.message is string && data.message.size() < 2000
+        && data.status == 'new'
+        && data.createdAt == request.time;
+    }
+
+    function isValidMessage(data) {
+      return data.keys().hasOnly(['name', 'email', 'phone', 'subject', 'message', 'status', 'createdAt'])
+        && data.keys().hasAll(['name', 'email', 'phone', 'subject', 'message', 'status', 'createdAt'])
+        && data.name is string && data.name.size() > 0 && data.name.size() < 200
+        && isEmail(data.email)
+        && data.phone is string && data.phone.size() < 40
+        && data.subject is string && data.subject.size() > 0 && data.subject.size() < 200
+        && data.message is string && data.message.size() > 0 && data.message.size() < 2000
+        && data.status == 'unread'
+        && data.createdAt == request.time;
+    }
+
+    function isValidNewsletterSignup(data) {
+      return data.keys().hasOnly(['email', 'createdAt'])
+        && data.keys().hasAll(['email', 'createdAt'])
+        && isEmail(data.email)
+        && data.createdAt == request.time;
+    }
+  }
+}

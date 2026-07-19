@@ -8,3 +8,8 @@ export const contact = {
   facebookUrl: "https://facebook.com/nazphotography.ke",
   youtubeUrl: "https://youtube.com/@nazphotography.ke",
 };
+
+export const payment = {
+  mpesaPaybill: "247247",
+  mpesaAccount: "0706549995",
+};
