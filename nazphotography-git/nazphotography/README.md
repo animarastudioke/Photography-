@@ -88,6 +88,52 @@ Any Next.js host works. Set the env vars from `.env.example` in your host's dash
 note that for a static export, `NEXT_PUBLIC_*` vars are baked in at **build time**, so set
 them before running `npm run build`, not after.
 
+## Booking notifications & deposit payment
+
+`functions/` is a Firebase Cloud Function (2nd gen, Node 20) that fires whenever a new
+document is created in the `bookings` collection. It sends two emails via SMTP:
+
+1. **To you** (`STUDIO_NOTIFY_EMAIL`) — the full booking details, so you actually find out
+   when someone books instead of having to check the Firebase Console.
+2. **To the customer** — a confirmation that you'll follow up within 24 hours, plus the
+   M-Pesa deposit instructions (Paybill `247247`, Account `0706549995`, matching what's
+   shown on the booking form's success screen in `components/booking/BookingForm.tsx`).
+
+To deploy it:
+
+```bash
+npm install -g firebase-tools   # if you don't already have the CLI
+firebase login
+firebase use --add              # pick your Firebase project
+```
+
+This requires the **Blaze (pay-as-you-go) plan** — Cloud Functions can't make outbound
+network calls (i.e. send email) on the free Spark plan. Blaze has a generous free tier;
+you won't be charged unless usage is far beyond what a booking form generates.
+
+Set the SMTP credentials as secrets (an app password if using Gmail — not your normal
+password: [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)):
+
+```bash
+firebase functions:secrets:set SMTP_HOST      # e.g. smtp.gmail.com
+firebase functions:secrets:set SMTP_PORT      # e.g. 465
+firebase functions:secrets:set SMTP_USER      # the sending email address
+firebase functions:secrets:set SMTP_PASS      # SMTP password / app password
+firebase functions:secrets:set STUDIO_NOTIFY_EMAIL   # where booking alerts go (can be the same as SMTP_USER)
+```
+
+Then deploy:
+
+```bash
+cd functions && npm install && cd ..
+firebase deploy --only functions
+```
+
+If your Paybill or account number ever change, update the `payment` object in
+`lib/data/contact.ts` (used by the booking form) and the `MPESA_PAYBILL`/`MPESA_ACCOUNT`
+constants at the top of `functions/index.js` (used by the email), then redeploy the
+function.
+
 ## Roadmap (not built in this pass)
 
 This repo covers **Phase 1 (foundation) and Phase 2 (homepage + all core pages)**.
@@ -96,8 +142,9 @@ Still ahead, in the order I'd tackle them:
 3. **Portfolio/gallery polish** — pagination or infinite scroll once there are 50+ real images
 4. **Services/pricing CMS** — move `lib/data/*.ts` into Firestore or Sanity so you can edit
    copy and prices without redeploying
-5. **Booking system hardening** — email/WhatsApp notifications on new Firestore bookings
-   (Firebase Cloud Function trigger), calendar conflict checking
+5. **Booking system hardening** — email notifications on new bookings are now built (see
+   "Booking notifications & deposit payment" below); still ahead: WhatsApp notifications,
+   calendar conflict checking
 6. **Blog CMS** — same pattern as services; currently static data for 3 posts
 7. **Contact** — spam protection (reCAPTCHA or honeypot) before going public
 8. **Testing & deployment** — Playwright smoke tests, Lighthouse CI, Vercel preview deploys
