@@ -15,6 +15,14 @@
 const SHARED_SECRET = "REPLACE_WITH_A_RANDOM_SECRET";
 const STUDIO_NOTIFY_EMAIL = "naz@nazphotography.co.ke";
 
+// Send emails as naz@nazphotography.co.ke instead of your personal Gmail
+// address. Requires verifying it as a "Send mail as" alias first: Gmail
+// Settings > Accounts and Import > Send mail as > Add another email address.
+// Until it's verified, sendAsOptions() below falls back to your account's
+// default address automatically — no need to touch this file again after
+// verifying the alias.
+const SEND_FROM_ALIAS = "naz@nazphotography.co.ke";
+
 const MPESA_PAYBILL = "247247";
 const MPESA_ACCOUNT = "0706549995";
 
@@ -59,7 +67,7 @@ function doPost(e) {
         "Budget: " + booking.budgetRange,
         "Message: " + (booking.message || "(none)"),
       ].join("\n"),
-      { replyTo: booking.email }
+      sendAsOptions({ replyTo: booking.email })
     );
 
     GmailApp.sendEmail(
@@ -77,7 +85,8 @@ function doPost(e) {
         "Please wait for my confirmation before paying.",
         "",
         "— Naz, Nazphotography.ke",
-      ].join("\n")
+      ].join("\n"),
+      sendAsOptions({})
     );
 
     return jsonResponse({ ok: true });
@@ -88,4 +97,16 @@ function doPost(e) {
 
 function jsonResponse(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+// Adds `from: SEND_FROM_ALIAS` only if it's already a verified "Send mail
+// as" alias on this Gmail account — GmailApp.sendEmail throws if you pass an
+// unverified from-address, so this keeps bookings notifications working
+// (from your default address) even before you've verified the alias.
+function sendAsOptions(options) {
+  const merged = Object.assign({}, options);
+  if (GmailApp.getAliases().indexOf(SEND_FROM_ALIAS) !== -1) {
+    merged.from = SEND_FROM_ALIAS;
+  }
+  return merged;
 }
