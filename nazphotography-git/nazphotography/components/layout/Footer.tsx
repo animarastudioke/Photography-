@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Instagram, Facebook, Youtube, MapPin, Phone, Mail, Globe } from "lucide-react";
 import { contact } from "@/lib/data/contact";
+import { submitNewsletter } from "@/lib/submissions";
 
 const quickLinks = [
   { href: "/", label: "Home" },
@@ -31,7 +32,8 @@ const serviceLinks = [
 
 export default function Footer() {
   const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <footer className="border-t border-line bg-ink">
@@ -91,25 +93,37 @@ export default function Footer() {
             <h4 className="text-sm font-semibold uppercase tracking-widest text-ivory">Newsletter</h4>
             <p className="mt-1 text-sm text-ash">Stay updated with my latest work and photography tips.</p>
           </div>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (email) setSubscribed(true);
-            }}
-            className="flex w-full max-w-md gap-3"
-          >
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              className="w-full rounded-sm border border-line bg-ink px-4 py-3 text-sm text-ivory placeholder:text-ash focus:border-gold focus:outline-none"
-            />
-            <button type="submit" className="btn-gold whitespace-nowrap">
-              {subscribed ? "Subscribed" : "Subscribe"}
-            </button>
-          </form>
+          <div className="w-full max-w-md">
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setStatus("loading");
+                setError(null);
+                const result = await submitNewsletter(email);
+                if (result.ok) {
+                  setStatus("success");
+                  setEmail("");
+                } else {
+                  setStatus("error");
+                  setError(result.error ?? "Something went wrong. Please try again.");
+                }
+              }}
+              className="flex w-full gap-3"
+            >
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="w-full rounded-sm border border-line bg-ink px-4 py-3 text-sm text-ivory placeholder:text-ash focus:border-gold focus:outline-none"
+              />
+              <button type="submit" disabled={status === "loading"} className="btn-gold whitespace-nowrap">
+                {status === "success" ? "Subscribed" : status === "loading" ? "Sending…" : "Subscribe"}
+              </button>
+            </form>
+            {status === "error" && <p className="mt-2 text-xs text-red-400">{error}</p>}
+          </div>
         </div>
       </div>
 

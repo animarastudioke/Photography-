@@ -25,3 +25,15 @@ export async function submitContact(data: ContactFormData): Promise<{ ok: boolea
     return { ok: false, error: err instanceof Error ? err.message : "Something went wrong." };
   }
 }
+
+export async function submitNewsletter(email: string): Promise<{ ok: boolean; error?: string }> {
+  if (!isFirebaseConfigured) {
+    return { ok: false, error: "Newsletter isn't configured yet." };
+  }
+  try {
+    await addDoc(collection(db, "newsletter"), { email, createdAt: serverTimestamp() });
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "Something went wrong." };
+  }
+}
