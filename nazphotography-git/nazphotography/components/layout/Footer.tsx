@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Instagram, Facebook, Youtube, MapPin, Phone, Mail, Globe } from "lucide-react";
 import { contact } from "@/lib/data/contact";
@@ -39,7 +40,10 @@ export default function Footer() {
     <footer className="border-t border-line bg-ink">
       <div className="container-lux grid grid-cols-2 gap-10 py-16 md:grid-cols-6">
         <div className="col-span-2">
-          <span className="font-script text-2xl text-ivory">Naz</span>
+          <div className="flex items-center gap-2.5">
+            <Image src="/images/logo-ivory.png" alt="" width={28} height={28} className="h-7 w-7" />
+            <span className="font-script text-2xl text-ivory">Naz</span>
+          </div>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-ash">
             Nazphotography.ke is a premium photography brand based in Mombasa, Kenya. We specialize
             in capturing timeless moments and creating visual stories that last forever.

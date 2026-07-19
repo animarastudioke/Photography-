@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -39,10 +40,13 @@ export default function Navbar() {
       )}
     >
       <nav className="container-lux flex h-20 items-center justify-between">
-        <Link href="/" className="font-script text-2xl text-ivory">
-          Naz
-          <span className="ml-2 align-middle font-sans text-[10px] font-medium uppercase tracking-widest2 text-ash">
-            Photography
+        <Link href="/" className="flex items-center gap-2.5">
+          <Image src="/images/logo-ivory.png" alt="" width={32} height={32} className="h-8 w-8" priority />
+          <span className="font-script text-2xl text-ivory">
+            Naz
+            <span className="ml-2 align-middle font-sans text-[10px] font-medium uppercase tracking-widest2 text-ash">
+              Photography
+            </span>
           </span>
         </Link>
 

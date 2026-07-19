@@ -53,7 +53,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   name: "Nazphotography.ke",
-  image: `${siteUrl}/icons/logo.svg`,
+  image: `${siteUrl}/images/logo.png`,
   description: "Luxury commercial photography and videography studio based in Mombasa, Kenya.",
   address: {
     "@type": "PostalAddress",
