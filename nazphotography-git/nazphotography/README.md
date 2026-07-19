@@ -90,8 +90,10 @@ them before running `npm run build`, not after.
 
 ## Booking notifications & deposit payment
 
-`functions/` is a Firebase Cloud Function (2nd gen, Node 20) that fires whenever a new
-document is created in the `bookings` collection. It sends two emails via SMTP:
+`apps-script/booking-notify.gs` is a Google Apps Script Web App (a reference copy —
+Apps Script projects live at script.google.com, not in this repo) that the booking form
+calls directly the moment someone submits. It sends two emails from your own Gmail
+account, via `GmailApp.sendEmail`, no SMTP setup or billing plan needed:
 
 1. **To you** (`STUDIO_NOTIFY_EMAIL`) — the full booking details, so you actually find out
    when someone books instead of having to check the Firebase Console.
@@ -99,40 +101,35 @@ document is created in the `bookings` collection. It sends two emails via SMTP:
    M-Pesa deposit instructions (Paybill `247247`, Account `0706549995`, matching what's
    shown on the booking form's success screen in `components/booking/BookingForm.tsx`).
 
-To deploy it:
+To set it up:
 
-```bash
-npm install -g firebase-tools   # if you don't already have the CLI
-firebase login
-firebase use --add              # pick your Firebase project
-```
+1. Go to [script.google.com](https://script.google.com), create a new project, and paste
+   in the contents of `apps-script/booking-notify.gs`.
+2. Edit the two constants at the top of the script: set `SHARED_SECRET` to a random
+   string (a password generator works fine) and `STUDIO_NOTIFY_EMAIL` to where booking
+   alerts should go.
+3. **Deploy > New deployment > Web app.** Set "Execute as" to **Me** and "Who has access"
+   to **Anyone**, then deploy. The first deploy prompts you to authorize the script to
+   send email as you — that's expected, it's your own Gmail account.
+4. Copy the deployment's `/exec` URL.
+5. Set two env vars (in `.env.local` for dev, and in Vercel's project settings for the
+   live site — remember `NEXT_PUBLIC_*` vars are baked in at build time, so redeploy
+   after setting them):
+   - `NEXT_PUBLIC_BOOKING_NOTIFY_URL` — the `/exec` URL from step 4
+   - `NEXT_PUBLIC_BOOKING_NOTIFY_SECRET` — the same string you set as `SHARED_SECRET`
 
-This requires the **Blaze (pay-as-you-go) plan** — Cloud Functions can't make outbound
-network calls (i.e. send email) on the free Spark plan. Blaze has a generous free tier;
-you won't be charged unless usage is far beyond what a booking form generates.
+This URL and secret both end up in the client-side JS bundle, same as any `NEXT_PUBLIC_*`
+var — the secret deters casual abuse of the public Apps Script endpoint, it isn't real
+access control. If that ever matters more (e.g. spam traffic), move this behind a proper
+server endpoint instead.
 
-Set the SMTP credentials as secrets (an app password if using Gmail — not your normal
-password: [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)):
-
-```bash
-firebase functions:secrets:set SMTP_HOST      # e.g. smtp.gmail.com
-firebase functions:secrets:set SMTP_PORT      # e.g. 465
-firebase functions:secrets:set SMTP_USER      # the sending email address
-firebase functions:secrets:set SMTP_PASS      # SMTP password / app password
-firebase functions:secrets:set STUDIO_NOTIFY_EMAIL   # where booking alerts go (can be the same as SMTP_USER)
-```
-
-Then deploy:
-
-```bash
-cd functions && npm install && cd ..
-firebase deploy --only functions
-```
+Bookings still save to Firestore with or without this configured — you'd just have to
+check the Firestore console manually for new ones if it's unset.
 
 If your Paybill or account number ever change, update the `payment` object in
 `lib/data/contact.ts` (used by the booking form) and the `MPESA_PAYBILL`/`MPESA_ACCOUNT`
-constants at the top of `functions/index.js` (used by the email), then redeploy the
-function.
+constants at the top of `apps-script/booking-notify.gs` (used by the email), then
+redeploy the Apps Script project (Deploy > Manage deployments > Edit > New version).
 
 ## Roadmap (not built in this pass)
 
