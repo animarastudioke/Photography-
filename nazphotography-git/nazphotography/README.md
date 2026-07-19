@@ -53,7 +53,11 @@ no runtime calls to Google).
 4. **Firebase** — create a Firebase project, enable Firestore, and fill in the
    `NEXT_PUBLIC_FIREBASE_*` values in `.env.local`. Until then, the booking and contact
    forms will show a friendly error asking people to WhatsApp instead — they won't crash,
-   but they also won't save anywhere.
+   but they also won't save anywhere. Once Firestore is enabled, paste `firestore.rules`
+   into Firebase Console → Firestore Database → Rules (or deploy it with the Firebase CLI:
+   `firebase deploy --only firestore:rules`) — it locks the `bookings`, `messages`, and
+   `newsletter` collections to create-only, shape-validated writes from the public forms,
+   with no public read/update/delete.
 5. **Cloudinary env vars** — only needed once you migrate off local `/public` images.
 6. **WhatsApp number / real contact details** — update `NEXT_PUBLIC_WHATSAPP_NUMBER` and the
    phone/email in `components/layout/Footer.tsx` and `app/contact/page.tsx`.
