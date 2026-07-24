@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
-import PlaceholderImage from "@/components/shared/PlaceholderImage";
 import { brandsWorkedWith } from "@/lib/data/stats";
 
 export default function AboutTeaser() {
@@ -52,7 +52,14 @@ export default function AboutTeaser() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="relative aspect-[4/5] overflow-hidden rounded-sm"
         >
-          <PlaceholderImage label="Nazario, behind the lens" tone="gold" />
+          <Image
+            src="/images/about/nazario-portrait.jpg"
+            alt="Nazario, luxury photographer based in Mombasa"
+            fill
+            className="object-cover"
+            priority
+            sizes="(max-width: 1024px) 100vw, 50vw"
+          />
         </motion.div>
       </div>
     </section>
