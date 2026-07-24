@@ -33,10 +33,10 @@ export default function BookCTA() {
           transition={{ duration: 0.7 }}
         >
           <span className="section-label">Ready to Create Something Beautiful?</span>
-          <h2 className="mt-2 font-display text-4xl text-ivory sm:text-5xl">Book Your Session</h2>
-          <p className="mx-auto mt-3 max-w-md text-sm text-ash">Let&apos;s bring your vision to life.</p>
+          <h2 className="mt-2 font-display text-4xl text-ivory sm:text-5xl">Let's Tell Your Story</h2>
+          <p className="mx-auto mt-3 max-w-md text-sm text-ash">Bring your vision to life with luxury photography.</p>
           <Link href="/book" className="btn-gold mt-8 inline-flex">
-            Book Your Session Now
+            Schedule Your Session
           </Link>
         </motion.div>
 

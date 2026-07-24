@@ -70,10 +70,10 @@ export default function Hero() {
 
         <motion.div variants={item} className="mt-9 flex flex-wrap items-center gap-5">
           <Link href="/book" className="btn-gold">
-            Book Your Session
+            Start Your Booking
           </Link>
           <Link href="/portfolio" className="group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-widest text-ivory">
-            View Portfolio
+            Explore Our Work
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </motion.div>

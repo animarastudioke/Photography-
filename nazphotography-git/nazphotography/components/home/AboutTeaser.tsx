@@ -22,11 +22,11 @@ export default function AboutTeaser() {
           <p className="mt-2 text-sm uppercase tracking-widest text-ash">Storyteller. Dreamer. Photographer.</p>
           <p className="mt-6 max-w-md text-sm leading-relaxed text-ash">
             Photography for me is not just about taking pictures — it&apos;s about capturing emotions,
-            connections, and moments that can never be recreated.
+            connections, and moments that can never be recreated. Every frame tells a story worth preserving.
           </p>
           <p className="mt-4 max-w-md text-sm leading-relaxed text-ash">
-            With over 6 years of experience, I&apos;ve worked with amazing people and brands across
-            Mombasa and beyond to create visual stories that leave a lasting impression.
+            With over 6 years of experience working with premium brands and unforgettable clients, I specialize
+            in creating luxury visual narratives across weddings, corporate work, hospitality, and editorial photography.
           </p>
           <span className="mt-6 block font-script text-3xl text-ivory">Nazario</span>
           <Link href="/about" className="btn-outline mt-6 inline-flex">

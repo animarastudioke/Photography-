@@ -50,7 +50,7 @@ export default function ServicesPage() {
                 )}
 
                 <Link href={`/book?service=${service.id}`} className="btn-outline mt-6 inline-flex">
-                  Book This Service
+                  Get Started
                 </Link>
               </div>
             );

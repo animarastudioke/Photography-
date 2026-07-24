@@ -16,7 +16,7 @@ const quickLinks = [
 const moreLinks = [
   { href: "/blog", label: "Blog" },
   { href: "/#testimonials", label: "Testimonials" },
-  { href: "/book", label: "Book Now" },
+  { href: "/book", label: "Schedule Session" },
   { href: "/contact", label: "FAQs" },
   { href: "/contact", label: "Contact" },
 ];
