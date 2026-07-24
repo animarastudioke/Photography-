@@ -8,6 +8,19 @@ export async function submitBooking(data: BookingFormData): Promise<{ ok: boolea
   }
   try {
     await addDoc(collection(db, "bookings"), { ...data, status: "new", createdAt: serverTimestamp() });
+
+    // Send email notification
+    try {
+      await fetch("/api/send-booking-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+    } catch (emailErr) {
+      console.error("Email notification failed:", emailErr);
+      // Don't fail the booking if email fails
+    }
+
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "Something went wrong." };
