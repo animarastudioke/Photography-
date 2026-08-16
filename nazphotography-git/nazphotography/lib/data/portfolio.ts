@@ -41,6 +41,7 @@ export const portfolioItems: PortfolioItem[] = [
   { id: "p15", title: "Carved Doorway, Coastal Boho", category: "lifestyle", image: "/images/portfolio/lifestyle-ornate-door-boho.webp", span: "tall", location: "Swahili coast", year: 2026 },
   { id: "p16", title: "Gallery Doors, Leopard Print", category: "lifestyle", image: "/images/portfolio/lifestyle-leopard-gallery-door.webp", span: "tall", location: "Swahili coast", year: 2026 },
   { id: "p17", title: "Newborn, First Portraits", category: "portraits", image: "/images/portfolio/newborn-basket-roses.webp", span: "normal", location: "Sanaa Kivulini Studio", year: 2026 },
+  { id: "p18", title: "Conference Hall, Ready for Delegates", category: "corporate", image: "/images/portfolio/corporate-conference-hall-setup.webp", span: "wide", location: "Mombasa", year: 2026 },
 ];
 
 export function filterPortfolio(category: PortfolioCategory | "all"): PortfolioItem[] {

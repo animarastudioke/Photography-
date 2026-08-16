@@ -9,7 +9,7 @@ const categories = [
   { number: "02", label: "Portraits", href: "/portfolio?category=portraits", image: "/images/portfolio/portrait-braided-updo.webp" },
   { number: "03", label: "Lifestyle", href: "/portfolio?category=lifestyle", image: "/images/portfolio/lifestyle-leopard-gallery-door.webp" },
   { number: "04", label: "Hotels & Resorts", href: "/portfolio?category=hotels-resorts", image: "/images/portfolio/hotel-water-feature-lounge.webp" },
-  { number: "05", label: "Corporate", href: "/portfolio?category=corporate", image: "" },
+  { number: "05", label: "Corporate", href: "/portfolio?category=corporate", image: "/images/portfolio/corporate-conference-hall-setup.webp" },
 ];
 
 export default function CategoryStrip() {
