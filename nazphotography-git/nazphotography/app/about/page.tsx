@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 const milestones = [
   { year: "2020", text: "Picked up a camera for the first time and started shooting friends & family in Mombasa." },
-  { year: "2022", text: "Opened Sanaa Kivulini, a dedicated studio space in Bamburi for portrait & product work." },
+  { year: "2022", text: "Began offering dedicated studio sessions for portrait & product work." },
   { year: "2024", text: "Began working with hotels, resorts, and corporate brands across the Kenyan coast." },
   { year: "2026", text: "Nazphotography.ke crosses 500 happy clients and 200 completed projects." },
 ];
@@ -32,9 +32,8 @@ export default function AboutPage() {
             connections, and moments that can never be recreated.
           </p>
           <p className="mt-4 max-w-md text-sm leading-relaxed text-ash">
-            Based in Mombasa and running Sanaa Kivulini, my studio in Bamburi, I work across weddings,
-            portraits, hotels & resorts, and corporate brands who want imagery with a genuine sense of
-            place — the coast, the light, the people.
+            Based in Mombasa, I work across weddings, portraits, hotels & resorts, and corporate brands
+            who want imagery with a genuine sense of place — the coast, the light, the people.
           </p>
           <span className="mt-6 block font-script text-3xl text-ivory">Nazario</span>
           <Link href="/book" className="btn-gold mt-6 inline-flex">
